@@ -58,3 +58,4 @@ a`)` 每笔付款占一行，b`)` 错过的付款各占一行。
 
 #### Features Engineering
 
+清洗后的features数据可以在此路径下载：[features.csv](https://hkustconnect-my.sharepoint.com/:x:/g/personal/jwangiy_connect_ust_hk/Eb2o_OS3WUBFoebOz7o0ZKUBbGwSKCqmxeu7jgPjybU0lQ?e=tETc40) 

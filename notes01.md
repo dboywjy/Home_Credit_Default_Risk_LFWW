@@ -63,8 +63,8 @@ a`)` 每笔付款占一行，b`)` 错过的付款各占一行。
 #### 模型开发、验证和结果
 mafs6010z-warmup2.ipynb
 
-模型[lgb.pkl](https://hkustconnect-my.sharepoint.com/:u:/g/personal/jwangiy_connect_ust_hk/EXObQJkzq5ZNhMZan55IvRcBZaCPWSMeZoff2KSPOv-zSg?e=48lNnx) 
+模型[lgb.pkl](https://hkustconnect-my.sharepoint.com/:u:/g/personal/jwangiy_connect_ust_hk/EXObQJkzq5ZNhMZan55IvRcBZaCPWSMeZoff2KSPOv-zSg?e=J34JHb) 
 
-入模特征[feacols2.pkl](https://hkustconnect-my.sharepoint.com/:u:/g/personal/jwangiy_connect_ust_hk/Ee1RgoaxkWdJkdShoiZpEJkB1YVbjfcHIwWEJnDw5V8OUQ?e=d7cxPP)
+入模特征[feacols2.pkl](https://hkustconnect-my.sharepoint.com/:u:/g/personal/jwangiy_connect_ust_hk/Ee1RgoaxkWdJkdShoiZpEJkB1YVbjfcHIwWEJnDw5V8OUQ?e=TQy79Z)
 
-结果[submission.csv](https://hkustconnect-my.sharepoint.com/:x:/g/personal/jwangiy_connect_ust_hk/EVy07ql7IitJmlzS__SApYABEv_rhzk9zSTv12x3wVkB-A?e=77MPMI)
+结果[submission.csv](https://hkustconnect-my.sharepoint.com/:x:/g/personal/jwangiy_connect_ust_hk/EVy07ql7IitJmlzS__SApYABEv_rhzk9zSTv12x3wVkB-A?e=bMjq2Y)

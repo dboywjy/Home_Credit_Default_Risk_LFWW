@@ -1,0 +1,233 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2019
+
+% ready for submission
+% \usepackage{neurips_2019}
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2019}
+
+\usepackage[final]{neurips_2019}
+% to compile a camera-ready version, add the [final] option, e.g.:
+% to avoid loading the natbib package, add option nonatbib:
+%     \usepackage[nonatbib]{neurips_2019}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{graphicx}
+\usepackage{float}
+
+\title{LightGBM Modeling: 
+
+Home Credit Default Risk}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+\author{%
+  Fu Yang \\
+  21029346\\
+  \texttt{yfubo@connect.ust.hk} \\
+  \And
+  Luo Yuqing \\
+  20582315\\
+  \texttt{yluobb@connect.ust.hk} \\
+  \AND
+  Wang Jinyuan \\
+  21028990\\
+  \texttt{jwangiy@connect.ust.hk} \\
+  \And
+  Wang Tong \\
+  20905737\\
+  \texttt{twangce@connect.hk} \\
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report discusses the application of the LightGBM model in the Home Credit competition on Kaggle, which aims to predict the repayment capabilities of clients using alternative data. We analyze the basic properties of the datasets and the distribution of the target variable. To fully utilize the data, we use the LabelEncoder from the Scikit-learn library to handle non-numerical data and employ Featuretools for automated feature engineering. Due to the large number of features, we choose LightGBM for feature selection. We evaluate the model using the testing set and present the ROC curve, with an AUC of 0.82 indicating satisfactory performance. The final submission receives a score of 0.69329. This report is divided into five parts, including Introduction, Data, Feature engineering, LightGBM modeling,  and Performance evaluation. Our experience applying the LightGBM model in this competition is shared to provide insights and guidance for future data analysis projects.
+
+\end{abstract}
+
+\section{Introduction}
+
+Applying for loans could be frustrating for people without sufficient credit histories. Home Credit, a financial institution empowering the unbanked population to access financing, is currently using alternative data to predict the repayment capabilities of their clients and have organized a competition on the Kaggle platform.[1] In the context of this competition, we employ various machine learning frameworks and models, including Featuretools, LightGBM(LGBM), and GridSearchCV to enhance the accuracy of our prediction models. LightGBM is a gradient boosting framework that uses decision trees as base learners and is widely used in the industry. Compared to XGBoost, LightGBM offers faster training speed, lower memory usage, and supports single machine multi-threading, distributed computing across multiple machines, and GPU training.
+
+\section{Data}
+\subsection{Data description}
+
+ The dataset provided by Home credit via Kaggle platform comprises 8 csv files, with a total size of 2.68 GB. The main tables are application\_train.csv and application\_train.csv, which contain main attributes of each loan, while other files provide supplementary attributes.
+
+
+\subsection{Data exploration}
+Before diving into the project, it is crucial to grasp the primary patterns of variable distributions so that suitable machine learning tools and models could be applied. We focus on application\_{train|test}.csv, since main features are contained in these two files.
+
+To start with, we explore the basic properties of the datasets. We observe that both application\_train.csv and application\_test.csv contain 121 columns as input variables while application\_train.csv includes an extra column as output. Regarding rows of the datasets, we find that the ratio of labeled to unlabeled data is approximately 86\% to 14\%. 
+
+Next, we analyze the distribution of the target variable in application\_train.csv. According to the description file, the target variable is a dummy variable where ‘1’ indicates the loan is difficult for the clients to repay and ‘0’ represents other cases. As shown in the figure below, the distribution of target is highly unbalanced, with only approximately 8\% of loans being classified as difficult to repay. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{Data/Target.png}
+  \caption{Target values}
+\end{figure}
+
+Finally, we examine the structure of the input data. We discover that out of the 121 input variables, 16 of them are not in numeric format and require encoding to be used in models. The number of unique values for each of these variables is shown in the figure below.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height = 7cm, width=0.8\textwidth]{Data/non-numerical.png}
+  \caption{Non numerically formatted features}
+\end{figure}
+
+\subsection{Data encoding}
+To unlock the full potential of the data, we proceed to handle the non-numerical data mentioned above. We utilize the LabelEncoder from the Scikit-learn library, which assigns unique numerical values between 0 and n\_classes-1 to encode the target labels. The reason why we adopt label encoding not one-hot encoding is that LGBM natively supports categorical features without requiring one-hot encoding. This step is also applied to other csv files so that they are compatible for feature construction. To be noticed, we retain NaN in this step for further use in other data preprocessing procedures during the feature selection stage.
+
+\section{Feature engineering}
+
+\subsection{Feature construction}
+To include all data for feature construction, we first study the parent-child relationships between each dataset and they are summarized in the table below. With the exception of Bureau\_balance, which is associated with the Bureau dataset, all other datasets are linked directly to application\_{train/test} using SK\_ID\_CURR as the common key.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{Data/relationship.png}
+  \caption{Dataset relationships}
+\end{figure}
+
+For the next step, we construct unique identifiers for datasets and filter the secondary tables by keeping only the records where the common key exists within the foreign key of the primary table.
+
+Finally, we employ Featuretools, which is a framework for performing automated feature engineering, to generate aggregate statistical property of data as features. The selected statistical features are listed below with descriptions.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Data/features selected.png}
+  \caption{Features selected}
+\end{figure}
+
+\subsection{Feature selection before LGBM}
+
+Given that the feature number is considerably large at 811, we choose LightGBM(LGBM) for feature selection. LGBM treats NaN value as a separate category and in the application scenario of this project, we believe the missingness itself carries some information. Therefore, we only exclude features with value missing rate over the threshold at 90\% and after the cleaning process, there are 796 features remaining.
+
+\section{LightGBM modeling}
+
+\subsection{Data spliting}
+We only use the loans in the "application\_train.csv" dataset for modeling, and we split the entire dataset into three parts: the training set, development set, and testing set. The ratio for the split is set to 8:1:1.
+
+Even though GridSearchCV performs cross-validation within the training set, we still require a development set and testing set for different purposes. The development set is used for initial feature importance-based selection and later serves as the validation dataset for the LGBM model. The testing set is used to evaluate the model's generalization ability and to check for issues such as overfitting or underfitting.
+
+When splitting the data into the three sets, we ensure that the data is randomly and evenly divided to avoid data overlap. We also adjust the proportions of the training, testing, and validation sets based on the data's size and characteristics to achieve better model performance.
+
+\subsection{Feature importance analysis}
+
+To further reduce the number of features, we utilize the feature importance analysis funcion of LGBM. We conduct an experimental run on development set and only select the features with im values larger than zero. The parameters and most important features are shown in the figures below and there are 578 features remaining after this step. It is worth mentioning that we set the parameter class\_weight to be balanced so that class weights are assigned inversely proportional to their respective frequencies. This would address problems caused by the highly unbalanced target data.
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}[b]{0.49\linewidth}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Model/parameter.png} 
+    \caption{Parameter of experimental run}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.49\linewidth}
+    \centering
+    \includegraphics[height=5cm,width=\linewidth]{Model/feature_importance.png} 
+    \caption{Feature importance}
+  \end{minipage}
+\end{figure}
+
+\subsection{Hyperparameter tuning}
+
+As LGBM requires a set of hyperparameters, we employ GridSearchCV to perform this task. The range of hyperparameters and best paratermers are shown in the figures below.
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}[b]{0.49\linewidth}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Model/parameter_list.png} 
+    \caption{Parameter list}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.49\linewidth}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Model/best_parameter.png} 
+    \caption{Best parameter}
+  \end{minipage}
+\end{figure}
+
+
+\section{Performance evaluation}
+
+\subsection{Testing set performance}
+
+We evaluate the model using the testing set and present the ROC curve below. The area under the curve (AUC) is 0.82, which indicates a satisfactory level of performance.
+
+We also examine the K-S score and confusion matrix. Our K-S score is 0.488, which indicates the model has a strong ability to differentiate between the positive and negative classes. In addition, we use the confusion matrix as the most basic and intuitive measure of the accuracy of the model. The confusion matrix allows us to calculate the true positives, true negatives, false positives, and false negatives for each subtype, which are then used to calculate the fb\_score. The fb\_score is a three-level metric that uses a weighted average of precisions and recalls, with recalls weighted "b" times as much as precisions in the merging process. This metric helps us to evaluate the performance of the subtyping model more comprehensively by considering both precision and recall. By using the fb\_score, we are able to identify the subtypes that are accurately predicted by the model and those that required further refinement. This allows us to improve the accuracy of the model and make more informed decisions based on the results. At this point, our beta = 2 is greater than 1, indicating that we value recall more, i.e. We value the model's ability to recognize positive samples more.
+
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}[b]{0.49\linewidth}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Model/ROC.png} 
+    \caption{ROC curve}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.49\linewidth}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Model/confusion_matrix.png} 
+    \caption{Confusion matrix and fb\_score}
+  \end{minipage}
+\end{figure}
+
+
+\subsection{Kaggle score}
+We apply the model to predict repayment capability for clients of leans in application\_test dataset and submit via Kaggle. The score of our final submission is 0.69329.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Model/submission.png}
+  \caption{Kaggle result}
+\end{figure}
+
+
+
+\section*{References}
+
+\medskip
+
+\small
+
+[1] Anna Montoya, inversion, KirillOdintsov, Martin Kotek. (2018). Home Credit Default Risk. Kaggle. https://kaggle.com/competitions/home-credit-default-risk
+
+\section*{Group contribution}
+Wang Jinyuan: Coding
+
+Luo Yuqing: Report writing
+
+Fu Yang: Coding Support and Report writing support
+
+Wang Tong: Report writing support and Latex formatting
+
+All members participate actively and equally contribute to this project.
+
+\section*{Github link}
+https://github.com/dboywjy/Home\_Credit\_Default\_Risk\_LFWW/tree/hcdr\_wjy2
+
+\end{document}

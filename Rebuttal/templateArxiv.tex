@@ -104,7 +104,7 @@
 
 
 \begin{abstract}
-This rebuttal is for the peer reviews from four classmates about our MAFS6010Z's first homework which is a home-credit-default-risk kaggle contest. We summarized their peer reviews into four opinions and gave our reasons to refute them. Our model advocates using mature relevant theories under limited time and limited computing resources, and quickly and accurately putting forward our own algorithms for the problem without plagiarizing existing external solutions.
+We summarized their peer reviews into four opinions and gave our reasons to refute them. Our model advocates using mature relevant theories under limited time and limited computing resources, and quickly and accurately putting forward our own algorithms for the problem without plagiarizing existing external solutions.
 \end{abstract}
 
 \section{Opinions}
@@ -113,8 +113,8 @@ This rebuttal is for the peer reviews from four classmates about our MAFS6010Z's
 
 \textbf{Response1:} 
 \begin{itemize}
-    \item Highly correlated with the target variable: It depends on the actual situations. It is common sense that the risk of default is related to the age. It's reasonable.
-    \item Outliers: It is true that outliers would cause model instability. But on the other hand, outliers also contains some information. Those applications with false data may be fraud. And tree model could separate them.
+    \item It depends on the actual situations. It is common sense that the risk of default is related to the age. It's reasonable.
+    \item It is true that outliers would cause model instability. But outliers also contains some information like fraud. Tree model could separate them.
 \end{itemize}
 
 \noindent\rule[0.5ex]{16cm}{1pt}
@@ -128,7 +128,7 @@ Trees can easily handle qualitative predictors without the need to create dummy 
 \noindent\rule[0.5ex]{16cm}{1pt}
 
 \textbf{Opinion3:} 
-\textit{Additionally, providing more clarity on the differences and considerations between XGBoost and LightGBM models, including their support for GPU training and multi-threading, would enhance the analysis. It is worth noting that XGBoost also supports multi-threading and GPU.}\ref{review1}
+\textit{It is worth noting that XGBoost also supports multi-threading and GPU.}\ref{review1}
 
 
 \textbf{Response3:}
@@ -140,7 +140,7 @@ The classmate did not read our thesis and code carefully. We did not say XGboost
 \textit{ While the report focuses on a single model, LightGBM, it could be beneficial to explore ensemble learning with multiple models to reduce prediction variance}\ref{review1}
 
 \textbf{Response4:}
-The single model problem they raised is simple. Based on the industry experiences, we know tree model fits this kind of problems.\cite{gupta2017analysis} Default risk prediction models usually need to deal with a large number of features and samples, and LightGBM has an efficient training and prediction speed, which can handle large-scale datasets. Secondly, default risk prediction models need to consider the interaction between different features, and LightGBM uses a histogram-based decision tree algorithm, which can effectively capture the nonlinear relationships and interactions between features.
+Based on the industry experiences, we know tree model fits this kind of problems.\cite{gupta2017analysis} LightGBM has an efficient training and prediction speed, which can handle large-scale datasets. Secondly, default risk prediction models need to consider the interaction between different features, and LightGBM uses a histogram-based decision tree algorithm, which can effectively capture the nonlinear relationships and interactions between features.
 
 \noindent\rule[0.5ex]{16cm}{1pt}
 
@@ -148,7 +148,7 @@ The single model problem they raised is simple. Based on the industry experience
 \textit{there is a typo on page 4 where the report says \'im value\' when it probably should be \'importance value\'}\ref{review2}
 
 \textbf{Response5:}
-Regarding the typo on page 4, it was just an abbreviation and not a significant issue.
+It was just an abbreviation and not a significant issue.
 
 \noindent\rule[0.5ex]{16cm}{1pt}
 
@@ -156,7 +156,7 @@ Regarding the typo on page 4, it was just an abbreviation and not a significant 
 \textit{the feature engineering part was done completely by Featuretools, which performed automatically without any economic logic. I believe constructing some features based on domain knowledge would boost the model. }\ref{review2}
 
 \textbf{Response6:}
-The use of Featuretools for feature engineering was a deliberate choice.\cite{schreck2018ai} This framework is proficient at converting time and relational datasets into feature matrices for machine learning. It provides a convenient and efficient way to perform transformations across multiple tables with minimal code. Featuretools also offers the flexibility to create custom primitives, and its performance optimizations make it a powerful complement to pandas. Therefore, while we agree that domain knowledge can enhance feature engineering, we believe that the automated Featuretools approach was suitable for this task.
+The use of Featuretools for feature engineering was a deliberate choice.\cite{schreck2018ai} This framework is proficient at converting time and relational datasets into feature matrices for machine learning. It provides a convenient and efficient way to perform transformations across multiple tables with minimal code. Therefore, while we agree that domain knowledge can enhance feature engineering, we believe that the automated Featuretools approach was suitable for this task.
 
 \noindent\rule[0.5ex]{16cm}{1pt}
 
@@ -164,7 +164,7 @@ The use of Featuretools for feature engineering was a deliberate choice.\cite{sc
 \textit{a thorough data exploration analysis should include more information about the data, such as important tendency, variability, distribution of variables, as well as correlation and relationships within the dataset.}\ref{review2}
 
 \textbf{Response7:}
-We understand that the data exploration part may seem insufficient, but even if these analyses are done for each variable, nothing will be done subsequently, so there is no need to do these analyses; As for the correlation and relationships within the dataset, we used a tree model, which is not sensitive to such high collinearity\cite{TOMASCHEK2018249}, so we did not find it necessary to include this analysis.
+We understand that the data exploration part may seem insufficient, but even if these analyses are done for each variable, nothing will be done subsequently, so there is no need to do these analyses; As for the correlation and relationships within the dataset, we used a tree model, which is not sensitive to such high collinearity\cite{TOMASCHEK2018249}.
 
 \noindent\rule[0.5ex]{16cm}{1pt}
 
